@@ -7,15 +7,19 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 from .auth import router as auth_router
 from .users import router as users_router
+from .catalog import router as catalog_router
+from .chat import router as chat_router
 from .config import get_settings
 from .database import get_db
 
-app = FastAPI(title="Chat de películas y videojuegos", version="0.1.0")
+app = FastAPI(title="Chat de películas y videojuegos", version="0.3.0")
 app.add_middleware(CORSMiddleware, allow_origins=get_settings().cors_origins,
                    allow_methods=["GET", "POST", "PUT", "DELETE"],
                    allow_headers=["Authorization", "Content-Type"])
 app.include_router(auth_router)
 app.include_router(users_router)
+app.include_router(catalog_router)
+app.include_router(chat_router)
 
 @app.exception_handler(SQLAlchemyError)
 async def database_error(request: Request, exc: SQLAlchemyError):
