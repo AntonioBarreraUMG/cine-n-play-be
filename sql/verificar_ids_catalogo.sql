@@ -1,4 +1,3 @@
--- Solo lectura: no altera ninguna tabla.
 SELECT table_schema, table_name, column_name, column_default, is_identity, identity_generation
 FROM information_schema.columns
 WHERE table_schema = 'public'
