@@ -30,7 +30,7 @@ def test_openai_request_and_word_count(provider):
     provider(handler)
     catalog={'peliculas':[{'titulo':'Película'}],'videojuegos':[{'titulo':'Juego'}]}
     completion=service.ask_openai('Dame películas',catalog)
-    expected=sum(len(m['content'].split()) for m in service.build_messages('Dame películas',catalog))+len(raw.split())
+    expected=len('Dame películas'.split())+len('Una película disponible'.split())
     assert completion.tokens==expected
     assert completion.answer.categoria=='peliculas'
 
@@ -94,3 +94,11 @@ def test_refusal_is_not_saved_as_response(provider):
     with pytest.raises(HTTPException) as exc:service.ask_openai('Pregunta',{})
     assert exc.value.status_code==502
     assert 'rechazó' in exc.value.detail
+
+
+def test_token_count_excludes_catalog_instructions_and_json(provider):
+    raw=json.dumps({'respuesta':'Primera palabra\nsegunda palabra','categoria':'videojuegos'})
+    provider(lambda request:httpx.Response(200,json={'choices':[{'finish_reason':'stop','message':{'content':raw}}]}))
+    small=service.ask_openai('Dame  juegos',{'peliculas':[],'videojuegos':[]})
+    large=service.ask_openai('Dame  juegos',{'peliculas':[{'titulo':'Un catálogo enorme con muchas palabras '*100}],'videojuegos':[]})
+    assert small.tokens==large.tokens==6

@@ -92,7 +92,8 @@ Se utiliza Chat Completions, JSON Schema estricto y store=false.
 ## Consumo del proyecto
 
 Cada unidad separada por espacios equivale a una palabra/token académico.
-Cuenta el contenido de instrucciones, catálogo, pregunta y JSON de respuesta.
+Cuenta únicamente las palabras de la pregunta y de la respuesta visible.
+Excluye instrucciones, catálogo y estructura JSON. Los registros anteriores conservan su conteo original.
 No representa los tokens reales ni el costo de OpenAI.
 La IA identifica el tema. El total se asigna a la categoría principal de la pregunta.
 Para preguntas mixtas o ajenas al catálogo, se reparte entre ambas categorías;
@@ -105,7 +106,7 @@ python -m pip install -r requirements-dev.txt
 python -m pytest -q
 ```
 
-31 pruebas pasan con SQLite y servicios simulados. Falta verificar PostgreSQL y
+32 pruebas pasan con SQLite y servicios simulados. Falta verificar PostgreSQL y
 OpenAI reales desde tu equipo. La disponibilidad y cuotas dependen del proyecto API.
 Si el catálogo supera la cuota o el contexto, se informa el error; no se recorta el catálogo.
 Si el guardado falla después de la respuesta, OpenAI puede haber consumido créditos

@@ -95,8 +95,9 @@ def ask_openai(pregunta: str, catalogo: dict) -> Completion:
             raise ValueError('Respuesta vacía')
     except (KeyError, IndexError, TypeError, ValueError, ValidationError):
         raise HTTPException(502, 'OpenAI devolvió una respuesta con formato inválido')
-    # No utiliza usage.total_tokens: OpenAI cuenta tokens reales, no palabras.
-    tokens = sum(word_count(message['content']) for message in messages) + word_count(raw_answer)
+    # Consumo académico: solo pregunta y respuesta visible, sin contexto ni JSON.
+    # No equivale a los tokens reales facturados por OpenAI.
+    tokens = word_count(pregunta) + word_count(answer.respuesta)
     return Completion(answer=answer, tokens=tokens)
 
 def get_ai_service():
